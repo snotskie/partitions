@@ -1,5 +1,7 @@
 # partitions
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/882d6aa1-446b-4875-9421-7282eed48b5b/deploy-status)](https://app.netlify.com/projects/courageous-pasca-c65b8f/deploys)
+
 This app is hosted on Netlify:
 
 https://courageous-pasca-c65b8f.netlify.app/
