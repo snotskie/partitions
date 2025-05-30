@@ -151,13 +151,13 @@ export default async function handler(req, context){
             
             const fill = colors[grid[I][J]];
             return `<rect
-                    width="${width}%"
-                    height="${height}%"
-                    x="${x}%"
-                    y="${y}%"
-                    fill="${fill}"
-                    stroke="${fill}"
-                    stroke-opacity="${opacity}%"
+                        width="${width}%"
+                        height="${height}%"
+                        x="${x}%"
+                        y="${y}%"
+                        fill="${fill}"
+                        stroke="${fill}"
+                        stroke-opacity="${opacity}%"
                     />`;
         }
         
