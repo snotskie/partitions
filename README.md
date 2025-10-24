@@ -20,6 +20,13 @@ It accepts the following URL parameters:
 - `t`: The percent of the partitions to make transparent, from 0 to 100. Default: 20.
 - `r`: The maximum amount to randomly shift squares' positions by. Default: 20.
 
+## run locally
+
+```sh
+npm install
+npx netlify dev
+```
+
 ## examples
 
 `https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=50&t=0&r=0&o=100`
