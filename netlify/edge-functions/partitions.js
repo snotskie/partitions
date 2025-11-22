@@ -190,7 +190,7 @@ export default async function handler(req, context){
     }
 
     // Populate a full grid
-    function partition_s(pattern, N, M){
+    function partition_s(N, M){
         const grid = firstrow_s(N);
         for (let J=1; J < M; ++J){
             addrow_s(grid, N, M);
@@ -202,8 +202,9 @@ export default async function handler(req, context){
     // Convert a grid to svg code: squares pattern
     function to_svg_s(grid, N, M, svgwidth, svgheight, T, R, opacity){
         const colors = {};
+        console.log(grid);
         function rect(I, J){
-            const width = 100/N;
+            const width = 100/N; // 100% / N
             const height = 100/M;
             const x = J*100/N + R*Math.random()/N - R/N/2;
             const y = I*100/M + R*Math.random()/M - R/M/2;
@@ -243,10 +244,10 @@ export default async function handler(req, context){
     function to_svg_t(grid, N, M, svgwidth, svgheight, T, R, opacity){
         const colors = {};
         function triangle(I, J){
-            const width = 100/N;
-            const height = 100/M;
-            const x = J*100/N + R*Math.random()/N - R/N/2;
-            const y = I*100/M + R*Math.random()/M - R/M/2;
+            const width = svgwidth/N;
+            const height = svgheight/M;
+            const x = J*svgwidth/N + R*Math.random()/N - R/N/2;
+            const y = I*svgheight/M + R*Math.random()/M - R/M/2;
             if (typeof colors[grid[I][J]] === "undefined"){
                 if (Math.random() > T){
                     colors[grid[I][J]] = colrand(opacity/100);
@@ -257,8 +258,8 @@ export default async function handler(req, context){
             
             const fill = colors[grid[I][J]];
             const points = (I+J) % 2 === 0 ?
-                `${x-width},${y} ${x+width},${y} ${x},${y+height}` :
-                `${x-width},${y+height} ${x+width},${y+height} ${x},${y}` ;
+                `${x-width},${y}        ${x+width},${y}        ${x},${y+height}` :
+                `${x-width},${y+height} ${x+width},${y+height} ${x},${y}`;
             return `<polygon
                         points="${points}"
                         fill="${fill}"
