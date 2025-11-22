@@ -145,19 +145,19 @@ export default async function handler(req, context){
             if (I > N){
                 // I can only be a neighbor of the one above it when it would be drawn pointing down
                 const i = I % N;
-                const j = Math.floor(I / M);
+                const j = Math.floor(I / N);
                 if ((i+j) % 2 === 0){
-                    ns.push(I - N);
+                    ns.push(I-N, I-N, I-N, I-N, I-N); // over sample neighbors other than I itself, to bias towards longer chains
                 }
             }
 
             // I is a neighbor with those left and right of it,
             // but not if they already point to I
             if (I % N !== 0   && disjoint_set[I-1] !== I){
-                ns.push(I-1);
+                ns.push(I-1, I-1, I-1, I-1, I-1);
             }
             if (I % N !== N-1 && disjoint_set[I+1] !== I){
-                ns.push(I+1);
+                ns.push(I+1, I+1, I+1, I+1, I+1);
             }
 
             return ns;

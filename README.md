@@ -82,6 +82,6 @@ npx netlify dev
 
 ![](https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90)
 
-`https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90&p=t`
+`https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=50&t=95&r=0&o=100&p=t`
 
-![](https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90&p=t)
+![](https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=50&t=95&r=0&o=100&p=t)
