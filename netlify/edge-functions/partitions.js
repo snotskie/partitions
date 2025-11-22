@@ -147,7 +147,7 @@ export default async function handler(req, context){
                 const i = I % N;
                 const j = Math.floor(I / N);
                 if ((i+j) % 2 === 0){
-                    ns.push(I-N, I-N, I-N, I-N, I-N); // over sample neighbors other than I itself, to bias towards longer chains
+                    ns.push(I-N, I-N, I-N, I-N, I-N, I-N, I-N, I-N, I-N, I-N); // over sample neighbors other than I itself, to bias towards longer chains
                 }
             }
 
