@@ -19,6 +19,7 @@ It accepts the following URL parameters:
 - `o`: The opacity of the squares in the grid, from 0 to 100. Default: 90.
 - `t`: The percent of the partitions to make transparent, from 0 to 100. Default: 20.
 - `r`: The maximum amount to randomly shift squares' positions by. Default: 20.
+- `p`: The pattern to draw, s or t. Default: s.
 
 ## run locally
 
@@ -80,3 +81,7 @@ npx netlify dev
 `https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90`
 
 ![](https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90)
+
+`https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90&p=t`
+
+![](https://courageous-pasca-c65b8f.netlify.app/?w=1600&h=900&s=25&t=95&r=50&o=90&p=t)
