@@ -15,6 +15,11 @@ export default async function handler(req, context){
         return Math.floor(Math.random() * 3);
     }
 
+    // sample(xs): return one x
+    function sample(xs){
+        return xs[Math.floor(Math.random() * xs.length)];
+    }
+
     // colrand(): returns a random pleasant color, from ~glitch-colors
     function colrand(A){
         A = A || 1;
@@ -44,7 +49,7 @@ export default async function handler(req, context){
     // by deciding at each step to either (i)
     // stretch the previous region or (ii)
     // start a new region
-    function firstrow(N){
+    function firstrow_s(N){
         label = 1;
         let row = [1];
         for (let I=1; I<N; ++I){
@@ -65,7 +70,7 @@ export default async function handler(req, context){
     // stretch the region above down into this
     // row or (ii) stretch the region on the left
     // to the right or (iii) start a new region.
-    function addrow(grid, N, M){
+    function addrow_s(grid, N, M){
         let row = [];
         let is_pulling_down = false;
         let last_row = grid[grid.length-1];
@@ -123,18 +128,79 @@ export default async function handler(req, context){
         grid.push(row);
     }
 
+    // Create a new row based on the previous
+    // by deciding at each step to either (i)
+    // stretch the region above down into this
+    // row or (ii) stretch the region on the left
+    // to the right or (iii) start a new region or
+    // (iv) stretch the region on the right to the left
+    function partition_t(N, M){
+        // randomly generate the disjoint set following neighboring rules
+        const disjoint_set = Array.from({length: N*M});
+        const neighbors = function(I){
+            // I is a neighbor of itself
+            const ns = [I];
+
+            // I is a neighbor of the one above it
+            if (I > N){
+                // I can only be a neighbor of the one above it when it would be drawn pointing down
+                const i = I % N;
+                const j = Math.floor(I / M);
+                if ((i+j) % 2 === 0){
+                    ns.push(I - N);
+                }
+            }
+
+            // I is a neighbor with those left and right of it,
+            // but not if they already point to I
+            if (I % N !== 0   && disjoint_set[I-1] !== I){
+                ns.push(I-1);
+            }
+            if (I % N !== N-1 && disjoint_set[I+1] !== I){
+                ns.push(I+1);
+            }
+
+            return ns;
+        };
+
+        for (const i in disjoint_set){
+            const I = parseInt(i);
+            disjoint_set[i] = sample(neighbors(I));
+        }
+
+        // flatten the disjoint set
+        const flatten = function(I){
+            const i = I;
+            if (disjoint_set[i] != I){
+                disjoint_set[i] = flatten(disjoint_set[i]);
+            }
+
+            return disjoint_set[i];
+        };
+
+        for (const i in disjoint_set){
+            const I = parseInt(i);
+            disjoint_set[i] = flatten(I);
+        }
+
+        // reshape to 2d grid
+        const grid = [];
+        while (disjoint_set.length) grid.push(disjoint_set.splice(0, N));
+        return grid;
+    }
+
     // Populate a full grid
-    function partition(N, M){
-        const grid = firstrow(N);
-        for (let J=0; J < M; ++J){
-            addrow(grid, N, M);
+    function partition_s(pattern, N, M){
+        const grid = firstrow_s(N);
+        for (let J=1; J < M; ++J){
+            addrow_s(grid, N, M);
         }
         
         return grid;
     }
 
-    // Convert a grid to svg code
-    function to_svg(grid, N, M, svgwidth, svgheight, T, R, opacity){
+    // Convert a grid to svg code: squares pattern
+    function to_svg_s(grid, N, M, svgwidth, svgheight, T, R, opacity){
         const colors = {};
         function rect(I, J){
             const width = 100/N;
@@ -173,6 +239,46 @@ export default async function handler(req, context){
         return svg;
     }
 
+    // Convert a grid to svg code: triangles pattern
+    function to_svg_t(grid, N, M, svgwidth, svgheight, T, R, opacity){
+        const colors = {};
+        function triangle(I, J){
+            const width = 100/N;
+            const height = 100/M;
+            const x = J*100/N + R*Math.random()/N - R/N/2;
+            const y = I*100/M + R*Math.random()/M - R/M/2;
+            if (typeof colors[grid[I][J]] === "undefined"){
+                if (Math.random() > T){
+                    colors[grid[I][J]] = colrand(opacity/100);
+                } else {
+                    colors[grid[I][J]] = "transparent";
+                }
+            }
+            
+            const fill = colors[grid[I][J]];
+            const points = (I+J) % 2 === 0 ?
+                `${x-width},${y} ${x+width},${y} ${x},${y+height}` :
+                `${x-width},${y+height} ${x+width},${y+height} ${x},${y}` ;
+            return `<polygon
+                        points="${points}"
+                        fill="${fill}"
+                        stroke="transparent"
+                        stroke-opacity="${opacity}%"
+                    />`;
+        }
+        
+        const bg = colrand();
+        let svg = `<svg width="${svgwidth}" height="${svgheight}" xmlns="http://www.w3.org/2000/svg" style="background: ${bg}">`;
+        for (let I=0; I < M; ++I){
+            for (let J=0; J < N; ++J){
+                svg += triangle(I, J);
+            }
+        }
+
+        svg += `</svg>`;
+        return svg;
+    }
+
     //// Main ////
 
     const params = new URL(req.url).searchParams;
@@ -181,7 +287,18 @@ export default async function handler(req, context){
           T = parseInt(params.get("t") ?? 20)/100,
           R = parseInt(params.get("r") ?? 20),
           opacity = parseInt(params.get("o") ?? 90),
-          size = parseInt(params.get("s") ?? 20);
+          size = parseInt(params.get("s") ?? 20),
+          pattern = (params.get("p") ?? "s").toLowerCase();
+
+    const partition = {
+        "s": partition_s,
+        "t": partition_t
+    }[pattern] ?? partition_s;
+
+    const to_svg = {
+        "s": to_svg_s,
+        "t": to_svg_t
+    }[pattern] ?? to_svg_s;
 
     const N = Math.floor(svgwidth / size),
           M = Math.floor(svgheight / size),
